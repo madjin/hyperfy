@@ -23,6 +23,7 @@ import { Snaps } from './systems/Snaps'
 import { Wind } from './systems/Wind'
 import { XR } from './systems/XR'
 import { ClientAI } from './systems/ClientAI'
+import { ClientConnection } from './systems/ClientConnection'
 
 export function createClientWorld({ NetworkSystem } = {}) {
   const world = new World()
@@ -49,5 +50,6 @@ export function createClientWorld({ NetworkSystem } = {}) {
   world.register('wind', Wind)
   world.register('xr', XR)
   world.register('ai', ClientAI)
+  world.register('connection', ClientConnection)
   return world
 }

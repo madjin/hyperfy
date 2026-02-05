@@ -17,6 +17,7 @@ import { ControlPriorities } from '../../core/extras/ControlPriorities'
 // import { MenuApp } from './MenuApp'
 import { ChevronDoubleUpIcon, HandIcon } from './Icons'
 import { Sidebar } from './Sidebar'
+import { ConnectionBadge } from './ConnectionBadge'
 
 export function CoreUI({ world }) {
   const ref = useRef()
@@ -92,6 +93,7 @@ export function CoreUI({ world }) {
       `}
     >
       {disconnected && <Disconnected />}
+      <ConnectionBadge world={world} />
       {!ui.reticleSuppressors && <Reticle world={world} />}
       {<Toast world={world} />}
       {ready && <ActionsBlock world={world} />}
