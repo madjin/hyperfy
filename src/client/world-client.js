@@ -9,11 +9,17 @@ import { CoreUI } from './components/CoreUI'
 
 export { System } from '../core/systems/System'
 
-export function Client({ wsUrl, onSetup }) {
+export function Client({ wsUrl, networkSystem, onSetup }) {
   const viewportRef = useRef()
   const cssLayerRef = useRef()
   const uiRef = useRef()
-  const world = useMemo(() => createClientWorld(), [])
+  const world = useMemo(
+    () =>
+      createClientWorld(
+        networkSystem ? { NetworkSystem: networkSystem } : undefined
+      ),
+    []
+  )
   const [ui, setUI] = useState(world.ui.state)
   useEffect(() => {
     world.on('ui', setUI)
@@ -45,6 +51,17 @@ export function Client({ wsUrl, onSetup }) {
       const config = { viewport, cssLayer, ui, wsUrl, baseEnvironment }
       onSetup?.(world, config)
       world.init(config)
+
+      // Offline bootstrap: deserialize empty defaults so shared systems
+      // have valid state. NOT inside OfflineNetwork — networking doesn't
+      // own world state.
+      if (networkSystem) {
+        world.settings.deserialize({})
+        world.collections.deserialize([])
+        world.blueprints.deserialize([])
+        world.entities.deserialize([])
+        world.chat.deserialize([])
+      }
     }
     init()
   }, [])

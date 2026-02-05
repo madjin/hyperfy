@@ -24,14 +24,14 @@ import { Wind } from './systems/Wind'
 import { XR } from './systems/XR'
 import { ClientAI } from './systems/ClientAI'
 
-export function createClientWorld() {
+export function createClientWorld({ NetworkSystem } = {}) {
   const world = new World()
   world.register('client', Client)
   world.register('livekit', ClientLiveKit)
   world.register('pointer', ClientPointer)
   world.register('prefs', ClientPrefs)
   world.register('controls', ClientControls)
-  world.register('network', ClientNetwork)
+  world.register('network', NetworkSystem || ClientNetwork)
   world.register('loader', ClientLoader)
   world.register('css', ClientCSS)
   world.register('graphics', ClientGraphics)
