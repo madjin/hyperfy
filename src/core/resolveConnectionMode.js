@@ -27,7 +27,18 @@ export function resolveConnectionMode({
   if (allowOverride) {
     const connectUrl = searchParams?.get('connect')
     if (connectUrl && connectUrl.startsWith('ws')) {
-      return { mode: 'direct', wsUrl: connectUrl }
+      // Sanitize: parse with URL constructor, reject query/fragment injection
+      try {
+        const parsed = new URL(connectUrl)
+        if (parsed.protocol !== 'ws:' && parsed.protocol !== 'wss:') {
+          throw new Error('invalid protocol')
+        }
+        // Rebuild clean URL: origin + pathname only (strip query/fragment)
+        const clean = parsed.origin + parsed.pathname
+        return { mode: 'direct', wsUrl: clean }
+      } catch (_e) {
+        // Malformed URL — ignore override, fall through
+      }
     }
   }
 

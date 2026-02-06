@@ -16,10 +16,21 @@ export class ClientConnection extends System {
         this.world.chat.add({ body: 'Usage: /connect ws://host:port/ws' })
         return
       }
-      const url = new URL(window.location.href)
-      url.searchParams.delete('mode')
-      url.searchParams.set('connect', value)
-      window.location.href = url.toString()
+      // Sanitize: strip query/fragment to prevent auth token leakage
+      try {
+        const parsed = new URL(value)
+        if (parsed.protocol !== 'ws:' && parsed.protocol !== 'wss:') {
+          this.world.chat.add({ body: 'URL must start with ws:// or wss://' })
+          return
+        }
+        const clean = parsed.origin + parsed.pathname
+        const url = new URL(window.location.href)
+        url.searchParams.delete('mode')
+        url.searchParams.set('connect', clean)
+        window.location.href = url.toString()
+      } catch (_e) {
+        this.world.chat.add({ body: 'Invalid URL' })
+      }
     })
 
     this.world.chat.bindCommand('offline', () => {

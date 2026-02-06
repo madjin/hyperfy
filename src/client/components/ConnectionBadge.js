@@ -12,10 +12,18 @@ export function ConnectionBadge({ world, forceExpanded }) {
 
   const handleConnect = () => {
     if (!serverUrl || !serverUrl.startsWith('ws')) return
-    const url = new URL(location.href)
-    url.searchParams.delete('mode')
-    url.searchParams.set('connect', serverUrl)
-    location.href = url.toString()
+    // Sanitize: strip query/fragment to prevent auth token leakage
+    try {
+      const parsed = new URL(serverUrl)
+      if (parsed.protocol !== 'ws:' && parsed.protocol !== 'wss:') return
+      const clean = parsed.origin + parsed.pathname
+      const url = new URL(location.href)
+      url.searchParams.delete('mode')
+      url.searchParams.set('connect', clean)
+      location.href = url.toString()
+    } catch (_e) {
+      // invalid URL
+    }
   }
 
   const handleOffline = () => {
