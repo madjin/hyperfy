@@ -93,19 +93,19 @@ export function CoreUI({ world }) {
       `}
     >
       {disconnected && <Disconnected />}
-      <ConnectionBadge world={world} />
+      <ConnectionBadge world={world} forceExpanded={disconnected && !ready} />
       {!ui.reticleSuppressors && <Reticle world={world} />}
       {<Toast world={world} />}
-      {ready && <ActionsBlock world={world} />}
-      {ready && <Sidebar world={world} ui={ui} />}
-      {ready && <Chat world={world} />}
+      {ready && player && <ActionsBlock world={world} />}
+      {ready && player && <Sidebar world={world} ui={ui} />}
+      {ready && player && <Chat world={world} />}
       {/* {ready && <Side world={world} player={player} menu={menu} />} */}
       {avatar && <AvatarPane key={avatar.hash} world={world} info={avatar} />}
       {/* {apps && <AppsPane world={world} close={() => world.ui.toggleApps()} />} */}
-      {!ready && <LoadingOverlay world={world} />}
+      {!ready && !disconnected && <LoadingOverlay world={world} />}
       {kicked && <KickedOverlay code={kicked} />}
-      {ready && isTouch && <TouchBtns world={world} />}
-      {ready && isTouch && <TouchStick world={world} />}
+      {ready && player && isTouch && <TouchBtns world={world} />}
+      {ready && player && isTouch && <TouchStick world={world} />}
       {confirm && <Confirm options={confirm} />}
       <div id='core-ui-portal' />
     </div>

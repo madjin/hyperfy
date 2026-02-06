@@ -2,12 +2,12 @@ import { css } from '@firebolt-dev/css'
 import { useState } from 'react'
 import { cls } from './cls'
 
-export function ConnectionBadge({ world }) {
+export function ConnectionBadge({ world, forceExpanded }) {
   const isOffline = !!world.network.isOffline
   const networkId = world.network.id || ''
   const params = new URLSearchParams(location.search)
   const currentConnect = params.get('connect') || ''
-  const [expanded, setExpanded] = useState(false)
+  const [expanded, setExpanded] = useState(!!forceExpanded)
   const [serverUrl, setServerUrl] = useState(currentConnect)
 
   const handleConnect = () => {
@@ -126,6 +126,12 @@ export function ConnectionBadge({ world }) {
             background: rgba(255, 255, 255, 0.03);
             color: rgba(255, 255, 255, 0.9);
           }
+          &.highlight {
+            color: #4ade80;
+            &:hover {
+              color: #6ee7a0;
+            }
+          }
         }
       `}
     >
@@ -156,12 +162,14 @@ export function ConnectionBadge({ world }) {
             />
           </label>
           <div className='connbadge-sep' />
-          <div className='connbadge-btn' onClick={handleConnect}>
+          <div className={cls('connbadge-btn', { highlight: isOffline })} onClick={handleConnect}>
             Connect
           </div>
-          <div className='connbadge-btn' onClick={handleOffline}>
-            Go Offline
-          </div>
+          {!isOffline && (
+            <div className={cls('connbadge-btn', 'highlight')} onClick={handleOffline}>
+              Go Offline
+            </div>
+          )}
           <div className='connbadge-btn' onClick={handleReset}>
             Reset
           </div>

@@ -50,17 +50,46 @@ export function Client({ wsUrl, networkSystem, onSetup }) {
       }
       const config = { viewport, cssLayer, ui, wsUrl, baseEnvironment }
       onSetup?.(world, config)
-      world.init(config)
+      await world.init(config)
 
-      // Offline bootstrap: deserialize empty defaults so shared systems
-      // have valid state. NOT inside OfflineNetwork — networking doesn't
-      // own world state.
+      // Offline bootstrap: deserialize empty defaults, spawn a local
+      // player, and load the base environment so the world is usable.
       if (networkSystem) {
+        // Set assetsUrl so asset:// protocol resolves (e.g. avatar.vrm)
+        world.assetsUrl = '/assets'
         world.settings.deserialize({})
         world.collections.deserialize([])
         world.blueprints.deserialize([])
-        world.entities.deserialize([])
         world.chat.deserialize([])
+        // Preload avatar before creating the player entity
+        world.loader.preload('avatar', 'asset://avatar.vrm')
+        world.loader.execPreload()
+        // Spawn a local player — mirrors ServerNetwork.onConnection
+        const playerId = world.network.id
+        world.entities.deserialize([
+          {
+            id: playerId,
+            type: 'player',
+            position: [0, 0, 0],
+            quaternion: [0, 0, 0, 1],
+            owner: playerId,
+            userId: playerId,
+            name: 'Player',
+            health: 100,
+            avatar: 'asset://avatar.vrm',
+            sessionAvatar: null,
+            rank: 2, // admin
+            enteredAt: Date.now(),
+          },
+        ])
+        // Load base environment model into the scene
+        const glb = await world.loader.load('model', baseEnvironment.model)
+        const root = glb.toNodes()
+        root.activate({ world })
+        // Use HDR as visible sky background
+        const hdr = await world.loader.load('hdr', baseEnvironment.hdr)
+        hdr.mapping = THREE.EquirectangularReflectionMapping
+        world.stage.scene.background = hdr
       }
     }
     init()
