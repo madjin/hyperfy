@@ -17,7 +17,7 @@ function App() {
     searchParams,
     allowOverride,
   })
-  const NetworkSystem = conn.mode === 'offline' ? OfflineNetwork : undefined
+  const NetworkSystem = conn.mode !== 'direct' ? OfflineNetwork : undefined
   return <Client wsUrl={conn.wsUrl} networkSystem={NetworkSystem} />
 }
 

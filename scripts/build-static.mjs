@@ -6,7 +6,6 @@
  *
  * Usage:
  *   node scripts/build-static.mjs
- *   node scripts/build-static.mjs --base /hyperfy   # for subdirectory hosting
  *
  * Output: build/static/  (ready to deploy)
  */
@@ -21,10 +20,6 @@ const rootDir = path.join(dirname, '../')
 const outDir = path.join(rootDir, 'build/static')
 const clientPublicDir = path.join(rootDir, 'src/client/public')
 const htmlSrc = path.join(rootDir, 'src/client/public/index.html')
-
-// Parse --base flag (e.g. --base /hyperfy)
-const baseIdx = process.argv.indexOf('--base')
-const basePath = baseIdx !== -1 ? process.argv[baseIdx + 1] || '' : ''
 
 // Public env vars to bake into the static build.
 // No PUBLIC_WS_URL → client auto-detects offline mode.
@@ -80,20 +75,19 @@ const ctx = await esbuild.context({
           )
 
           // generate static env.js
-          const envCode = [
-            'if (!globalThis.env) globalThis.env = {}',
-            `globalThis.env = ${JSON.stringify(publicEnvs)}`,
-          ].join('\n')
+          const envCode = `globalThis.env = ${JSON.stringify(publicEnvs)}`
           await fs.writeFile(path.join(outDir, 'env.js'), envCode)
 
-          // find hashed JS filenames
+          // find hashed JS filenames (strip leading / for relative paths)
           const outputs = Object.keys(result.metafile.outputs)
           const jsPath = outputs
             .find(f => f.includes('/index-') && f.endsWith('.js'))
             .split('build/static')[1]
+            .replace(/^\//, '')
           const particlesPath = outputs
             .find(f => f.includes('/particles-') && f.endsWith('.js'))
             .split('build/static')[1]
+            .replace(/^\//, '')
 
           // fill HTML template
           const buildId = Date.now()
@@ -115,7 +109,6 @@ const ctx = await esbuild.context({
 
           console.log(`\nStatic build ready → build/static/`)
           console.log(`  ${Object.keys(result.metafile.outputs).length} output files`)
-          console.log(`  Base path: ${basePath || '/'}`)
           console.log(`\nTo test locally:`)
           console.log(`  npx serve build/static`)
           console.log(`\nTo deploy to GitHub Pages:`)

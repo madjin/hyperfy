@@ -56,7 +56,7 @@ export function Client({ wsUrl, networkSystem, onSetup }) {
       // player, and load the base environment so the world is usable.
       if (networkSystem) {
         // Set assetsUrl so asset:// protocol resolves (e.g. avatar.vrm)
-        world.assetsUrl = '/assets'
+        world.assetsUrl = 'assets'
         world.settings.deserialize({})
         world.collections.deserialize([])
         world.blueprints.deserialize([])
@@ -83,11 +83,11 @@ export function Client({ wsUrl, networkSystem, onSetup }) {
           },
         ])
         // Load base environment model into the scene
-        const glb = await world.loader.load('model', baseEnvironment.model)
+        const glb = await world.loader.load('model', 'base-environment.glb')
         const root = glb.toNodes()
         root.activate({ world })
         // Use HDR as visible sky background
-        const hdr = await world.loader.load('hdr', baseEnvironment.hdr)
+        const hdr = await world.loader.load('hdr', 'Clear_08_4pm_LDR.hdr')
         hdr.mapping = THREE.EquirectangularReflectionMapping
         world.stage.scene.background = hdr
       }
