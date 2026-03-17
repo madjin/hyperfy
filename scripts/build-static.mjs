@@ -78,16 +78,11 @@ const ctx = await esbuild.context({
           const envCode = `globalThis.env = ${JSON.stringify(publicEnvs)}`
           await fs.writeFile(path.join(outDir, 'env.js'), envCode)
 
-          // find hashed JS filenames (strip leading / for relative paths)
+          // find hashed JS filenames (relative paths, no leading /)
           const outputs = Object.keys(result.metafile.outputs)
-          const jsPath = outputs
-            .find(f => f.includes('/index-') && f.endsWith('.js'))
-            .split('build/static')[1]
-            .replace(/^\//, '')
-          const particlesPath = outputs
-            .find(f => f.includes('/particles-') && f.endsWith('.js'))
-            .split('build/static')[1]
-            .replace(/^\//, '')
+          const relativePath = f => f.split('build/static')[1].replace(/^\//, '')
+          const jsPath = relativePath(outputs.find(f => f.includes('/index-') && f.endsWith('.js')))
+          const particlesPath = relativePath(outputs.find(f => f.includes('/particles-') && f.endsWith('.js')))
 
           // fill HTML template
           const buildId = Date.now()
