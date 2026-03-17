@@ -40,6 +40,7 @@ export class ClientNetwork extends System {
   }
 
   send(name, data) {
+    if (!this.ws || this.ws.readyState !== WebSocket.OPEN) return
     // console.log('->', name, data)
     const packet = writePacket(name, data)
     this.ws.send(packet)
@@ -206,6 +207,7 @@ export class ClientNetwork extends System {
   }
 
   onPong = time => {
+    this.world.emit('ping', Math.round(performance.now() - time))
     this.world.stats?.onPong(time)
   }
 
@@ -214,6 +216,7 @@ export class ClientNetwork extends System {
   }
 
   onClose = code => {
+    this.isOffline = true
     this.world.chat.add({
       id: uuid(),
       from: null,
