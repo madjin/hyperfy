@@ -9,17 +9,11 @@ import { CoreUI } from './components/CoreUI'
 
 export { System } from '../core/systems/System'
 
-export function Client({ wsUrl, networkSystem, onSetup }) {
+export function Client({ wsUrl, onSetup }) {
   const viewportRef = useRef()
   const cssLayerRef = useRef()
   const uiRef = useRef()
-  const world = useMemo(
-    () =>
-      createClientWorld(
-        networkSystem ? { NetworkSystem: networkSystem } : undefined
-      ),
-    []
-  )
+  const world = useMemo(() => createClientWorld(), [])
   const [ui, setUI] = useState(world.ui.state)
   useEffect(() => {
     world.on('ui', setUI)
@@ -54,7 +48,7 @@ export function Client({ wsUrl, networkSystem, onSetup }) {
 
       // Offline bootstrap: deserialize empty defaults, spawn a local
       // player, and load the base environment so the world is usable.
-      if (networkSystem) {
+      if (!wsUrl) {
         // Set assetsUrl so asset:// protocol resolves (e.g. avatar.vrm)
         world.assetsUrl = 'assets'
         world.settings.deserialize({})

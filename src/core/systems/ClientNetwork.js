@@ -21,10 +21,20 @@ export class ClientNetwork extends System {
     this.apiUrl = null
     this.id = null
     this.isClient = true
+    this.isServer = false
+    this.isOffline = false
+    this.maxUploadSize = 0
+    this.serverTimeOffset = 0
     this.queue = []
   }
 
   init({ wsUrl, name, avatar }) {
+    if (!wsUrl) {
+      this.id = uuid()
+      this.isOffline = true
+      this._registerCommands()
+      return
+    }
     const authToken = storage.get('authToken')
     let url = `${wsUrl}?authToken=${authToken}`
     if (name) url += `&name=${encodeURIComponent(name)}`
@@ -33,7 +43,10 @@ export class ClientNetwork extends System {
     this.ws.binaryType = 'arraybuffer'
     this.ws.addEventListener('message', this.onPacket)
     this.ws.addEventListener('close', this.onClose)
+    this._registerCommands()
+  }
 
+  _registerCommands() {
     this.world.chat.bindCommand('connect', ({ value }) => {
       const clean = sanitizeWsUrl(value)
       if (!clean) {
@@ -62,6 +75,7 @@ export class ClientNetwork extends System {
   }
 
   async upload(file) {
+    if (this.isOffline) return
     {
       // first check if we even need to upload it
       const hash = await hashFile(file)
@@ -98,7 +112,7 @@ export class ClientNetwork extends System {
   }
 
   getTime() {
-    return (performance.now() + this.serverTimeOffset) / 1000 // seconds
+    return (performance.now() + (this.serverTimeOffset ?? 0)) / 1000 // seconds
   }
 
   onPacket = e => {

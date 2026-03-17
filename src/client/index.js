@@ -4,7 +4,6 @@ import '../core/lockdown'
 import { createRoot } from 'react-dom/client'
 
 import { sanitizeWsUrl } from '../core/utils'
-import { OfflineNetwork } from '../core/systems/OfflineNetwork'
 import { Client } from './world-client'
 
 function App() {
@@ -29,8 +28,7 @@ function App() {
     if (!mode) mode = wsUrl ? 'direct' : 'offline'
   }
 
-  const NetworkSystem = mode !== 'direct' ? OfflineNetwork : undefined
-  return <Client wsUrl={wsUrl} networkSystem={NetworkSystem} />
+  return <Client wsUrl={mode !== 'direct' ? undefined : wsUrl} />
 }
 
 const root = createRoot(document.getElementById('root'))
