@@ -64,6 +64,7 @@ import { DEG2RAD, RAD2DEG } from '../../core/extras/general'
 import * as THREE from '../../core/extras/three'
 import { isTouch } from '../utils'
 import { uuid, sanitizeWsUrl } from '../../core/utils'
+import { navigateToServer } from '../../core/utils-client'
 import { useRank } from './useRank'
 import { Ranks } from '../../core/extras/ranks'
 
@@ -116,10 +117,7 @@ export function Sidebar({ world, ui }) {
   const handleConnect = () => {
     const clean = sanitizeWsUrl(serverUrl)
     if (!clean) return
-    const url = new URL(location.href)
-    url.searchParams.delete('mode')
-    url.searchParams.set('connect', clean)
-    location.href = url.toString()
+    navigateToServer(clean)
   }
   const handleDisconnect = () => {
     world.network.ws?.close()

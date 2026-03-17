@@ -2,8 +2,8 @@ import moment from 'moment'
 import { emoteUrls } from '../extras/playerEmotes'
 import { readPacket, writePacket } from '../packets'
 import { storage } from '../storage'
-import { uuid } from '../utils'
-import { hashFile } from '../utils-client'
+import { uuid, sanitizeWsUrl } from '../utils'
+import { hashFile, navigateToServer } from '../utils-client'
 import { System } from './System'
 
 /**
@@ -33,6 +33,21 @@ export class ClientNetwork extends System {
     this.ws.binaryType = 'arraybuffer'
     this.ws.addEventListener('message', this.onPacket)
     this.ws.addEventListener('close', this.onClose)
+
+    this.world.chat.bindCommand('connect', ({ value }) => {
+      const clean = sanitizeWsUrl(value)
+      if (!clean) {
+        this.world.chat.add({ body: 'Usage: /connect ws://host:port/ws' })
+        return
+      }
+      navigateToServer(clean)
+    })
+    this.world.chat.bindCommand('offline', () => {
+      this.ws?.close()
+    })
+    this.world.chat.bindCommand('reconnect', () => {
+      navigateToServer()
+    })
   }
 
   preFixedUpdate() {
