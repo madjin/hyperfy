@@ -1,0 +1,1 @@
+globalThis.env = {"PUBLIC_ALLOW_WS_OVERRIDE":"true","PUBLIC_MAX_UPLOAD_SIZE":"0"}
