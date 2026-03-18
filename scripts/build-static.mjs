@@ -27,6 +27,7 @@ const htmlSrc = path.join(rootDir, 'src/client/public/index.html')
 const publicEnvs = {
   PUBLIC_ALLOW_WS_OVERRIDE: 'true', // allow ?connect= on static builds
   PUBLIC_MAX_UPLOAD_SIZE: '0',
+  ...(process.env.PUBLIC_WS_URL && { PUBLIC_WS_URL: process.env.PUBLIC_WS_URL }),
 }
 
 await fs.emptyDir(outDir)

@@ -27,6 +27,8 @@ jobs:
       - run: npm ci
 
       - run: npm run static:build
+        env:
+          PUBLIC_WS_URL: ''  # Optional: set to wss://your-server.com/ws for a default server
 
       - uses: peaceiris/actions-gh-pages@v4
         with:
