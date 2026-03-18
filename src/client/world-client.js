@@ -86,10 +86,17 @@ export function Client({ wsUrl, onSetup }) {
             enteredAt: Date.now(),
           },
         ])
-        // Load ground model (sky/HDR handled by ClientEnvironment via baseEnvironment.hdr)
-        const glb = await world.loader.load('model', `${base}base-environment.glb`)
+        // Load ground model and HDR sky in parallel.
+        // updateSky only sets scene.environment (reflections); scene.background
+        // must be set explicitly for the HDR to be visible as the sky.
+        const [glb, hdr] = await Promise.all([
+          world.loader.load('model', `${base}base-environment.glb`),
+          world.loader.load('hdr', `${base}Clear_08_4pm_LDR.hdr`),
+        ])
         const root = glb.toNodes()
         root.activate({ world })
+        hdr.mapping = THREE.EquirectangularReflectionMapping
+        world.stage.scene.background = hdr
       }
     }
     init()
