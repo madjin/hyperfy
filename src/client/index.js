@@ -14,7 +14,7 @@ function App() {
   let wsUrl = env.PUBLIC_WS_URL
   let mode = searchParams.get('mode')
 
-  if (mode !== 'offline' && mode !== 'solo') {
+  if (mode !== 'offline') {
     if (allowOverride) {
       const connectUrl = searchParams.get('connect')
       if (connectUrl) {
