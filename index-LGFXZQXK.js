@@ -8892,7 +8892,7 @@ ${e.tab}if ( ${m} ) {
           user-select: none;
           display: ${a.visible?"block":"none"};
         }
-      `,children:zi("div",{className:"App__viewport",ref:t,children:[we("div",{className:"App__cssLayer",ref:n}),we("div",{className:"App__ui",ref:s,children:we(NLe,{world:o})})]})})}function zii(){let i=new URLSearchParams(location.search),e=location.hostname==="localhost"||env.PUBLIC_ALLOW_WS_OVERRIDE==="true",t=env.PUBLIC_WS_URL,n=i.get("mode");if(n!=="offline"&&n!=="solo"){if(e){let s=i.get("connect");if(s){let o=dL(s);o&&(t=o,n="direct")}}n||(n=t?"direct":"offline")}return we(ULe,{wsUrl:n!=="direct"?void 0:t})}var jii=(0,HLe.createRoot)(document.getElementById("root"));jii.render(we(zii,{}));
+      `,children:zi("div",{className:"App__viewport",ref:t,children:[we("div",{className:"App__cssLayer",ref:n}),we("div",{className:"App__ui",ref:s,children:we(NLe,{world:o})})]})})}function zii(){let i=new URLSearchParams(location.search),e=location.hostname==="localhost"||env.PUBLIC_ALLOW_WS_OVERRIDE==="true",t=env.PUBLIC_WS_URL,n=i.get("mode");if(n!=="offline"){if(e){let s=i.get("connect");if(s){let o=dL(s);o&&(t=o,n="direct")}}n||(n=t?"direct":"offline")}return we(ULe,{wsUrl:n!=="direct"?void 0:t})}var jii=(0,HLe.createRoot)(document.getElementById("root"));jii.render(we(zii,{}));
 /*! Bundled license information:
 
 @jspm/core/nodelibs/browser/chunk-DtuTasat.js:
@@ -9439,4 +9439,4 @@ lucide-react/dist/esm/lucide-react.js:
    * See the LICENSE file in the root directory of this source tree.
    *)
 */
-//# sourceMappingURL=index-4GWCUHZU.js.map
+//# sourceMappingURL=index-LGFXZQXK.js.map
