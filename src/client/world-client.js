@@ -42,15 +42,25 @@ export function Client({ wsUrl, onSetup }) {
         wsUrl = wsUrl()
         if (wsUrl instanceof Promise) wsUrl = await wsUrl
       }
-      const config = { viewport, cssLayer, ui, wsUrl, baseEnvironment }
+
+      // For offline/static mode, compute an absolute base URL so assets
+      // resolve correctly on sub-paths (e.g. GitHub Pages at /hyperfy/).
+      // resolveURL() passes https:// URLs through unchanged; bare filenames
+      // and absolute paths both break at sub-paths.
+      const base = wsUrl ? null : new URL('./', location.href).href
+
+      if (base) {
+        baseEnvironment.model = `${base}base-environment.glb`
+        baseEnvironment.hdr = `${base}Clear_08_4pm_LDR.hdr`
+      }
+
+      const config = { viewport, cssLayer, ui, wsUrl, assetsUrl: base ? `${base}assets` : undefined, baseEnvironment }
       onSetup?.(world, config)
       await world.init(config)
 
       // Offline bootstrap: deserialize empty defaults, spawn a local
       // player, and load the base environment so the world is usable.
       if (!wsUrl) {
-        // Set assetsUrl so asset:// protocol resolves (e.g. avatar.vrm)
-        world.assetsUrl = 'assets'
         world.settings.deserialize({})
         world.collections.deserialize([])
         world.blueprints.deserialize([])
@@ -76,15 +86,10 @@ export function Client({ wsUrl, onSetup }) {
             enteredAt: Date.now(),
           },
         ])
-        // Load environment model and HDR sky in parallel
-        const [glb, hdr] = await Promise.all([
-          world.loader.load('model', 'base-environment.glb'),
-          world.loader.load('hdr', 'Clear_08_4pm_LDR.hdr'),
-        ])
+        // Load ground model (sky/HDR handled by ClientEnvironment via baseEnvironment.hdr)
+        const glb = await world.loader.load('model', `${base}base-environment.glb`)
         const root = glb.toNodes()
         root.activate({ world })
-        hdr.mapping = THREE.EquirectangularReflectionMapping
-        world.stage.scene.background = hdr
       }
     }
     init()
