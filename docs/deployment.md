@@ -12,7 +12,7 @@ Edit `.env` and set at minimum:
 
 | Variable | Description |
 |---|---|
-| `JWT_SECRET` | Secret key for signing auth tokens (min 16 chars) |
+| `JWT_SECRET` | Secret key for signing auth tokens (16+ chars recommended) |
 | `ADMIN_CODE` | Password for admin operations (backup, restore) |
 | `PORT` | HTTP port (default: `3000`) |
 | `PUBLIC_WS_URL` | Public WebSocket URL, e.g. `wss://your-server.com/ws` |
